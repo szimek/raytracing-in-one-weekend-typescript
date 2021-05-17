@@ -2,6 +2,7 @@ import { Color } from '../utils/color';
 import { HitRecord } from '../utils/HitRecord';
 import { Material, Scattered } from '../utils/Material';
 import { Ray } from '../utils/Ray';
+import { Vec3 } from '../utils/Vec3';
 
 export class Dielectric extends Material {
   refractionIndex: number;
@@ -18,9 +19,18 @@ export class Dielectric extends Material {
       : this.refractionIndex;
 
     const unitDirection = ray.direction.unit();
-    const refracted = unitDirection.refract(hit.normal, refractionRatio);
+    const cosTheta = Math.min(unitDirection.negate().dot(hit.normal), 1.0);
+    const sinTheta = Math.sqrt(1.0 - cosTheta * cosTheta);
+    const canRefract = refractionRatio * sinTheta <= 1.0;
+    let direction: Vec3;
 
-    const scattered = new Ray(hit.point, refracted);
+    if (canRefract) {
+      direction = unitDirection.refract(hit.normal, refractionRatio);
+    } else {
+      direction = unitDirection.reflect(hit.normal);
+    }
+
+    const scattered = new Ray(hit.point, direction);
 
     return {
       ray: scattered,
