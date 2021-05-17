@@ -15,7 +15,7 @@ export class Ray {
       return new Color(0, 0, 0);
     }
 
-    const hit = scene.hit(this, 0, Infinity);
+    const hit = scene.hit(this, 0.001, Infinity);
 
     if (hit) {
       const target = hit.point.add(hit.normal).add(Vec3.randomInUnitSphere());
