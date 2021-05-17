@@ -91,4 +91,15 @@ export class Vec3 {
   reflect(normal: Vec3): Vec3 {
     return this.subtract(normal.scale(this.dot(normal)).scale(2));
   }
+
+  refract(normal: Vec3, etaiOverEtat: number): Vec3 {
+    const unit = this.unit();
+    const cosTheta = Math.min(unit.negate().dot(normal), 1.0);
+    const perpendicular = this.add(normal.scale(cosTheta)).scale(etaiOverEtat);
+    const parallel = normal.scale(
+      -Math.sqrt(Math.abs(1.0 - perpendicular.lengthSquared())),
+    );
+
+    return perpendicular.add(parallel);
+  }
 }
