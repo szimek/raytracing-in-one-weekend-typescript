@@ -18,10 +18,15 @@ export class Ray {
     const hit = scene.hit(this, 0.001, Infinity);
 
     if (hit) {
-      const target = hit.point.add(hit.normal).add(Vec3.randomUnitVector());
-      const childRay = new Ray(hit.point, target.subtract(hit.point));
+      const scattered = hit.material.scatter(hit, this);
 
-      return childRay.color(scene, remainingBounces - 1).scale(0.5);
+      if (scattered) {
+        return scattered.ray
+          .color(scene, remainingBounces - 1)
+          .multiply(scattered.attenuation);
+      }
+
+      return new Color(0, 0, 0);
     }
 
     // Scale Y to -1.0 ... 1.0

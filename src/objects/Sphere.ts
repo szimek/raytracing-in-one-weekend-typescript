@@ -1,16 +1,19 @@
 import { HitRecord } from '../utils/HitRecord';
 import { Hittable } from '../utils/Hittable';
+import { Material } from '../utils/Material';
 import { Point3 } from '../utils/Point3';
 import { Ray } from '../utils/Ray';
 
 export class Sphere extends Hittable {
   center: Point3;
   radius: number;
+  material: Material;
 
-  constructor(center: Point3, radius: number) {
+  constructor(center: Point3, radius: number, material: Material) {
     super();
     this.center = center;
     this.radius = radius;
+    this.material = material;
   }
 
   hit(ray: Ray, tMin: number, tMax: number): HitRecord | null {
@@ -37,7 +40,8 @@ export class Sphere extends Hittable {
 
     const point = ray.at(root);
     const normal = point.subtract(this.center).scale(1 / this.radius);
-    const hit = new HitRecord(point, normal, root);
+
+    const hit = new HitRecord(point, normal, root, this.material);
     const outwardNormal = hit.point
       .subtract(this.center)
       .scale(1 / this.radius);

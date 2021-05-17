@@ -81,4 +81,14 @@ export class Vec3 {
   unit(): Vec3 {
     return this.scale(1.0 / this.length());
   }
+
+  isNearZero(): boolean {
+    const s = 1e-8;
+
+    return Math.abs(this.x) < s && Math.abs(this.y) < s && Math.abs(this.z) < s;
+  }
+
+  reflect(normal: Vec3): Vec3 {
+    return this.subtract(normal.scale(this.dot(normal)).scale(2));
+  }
 }
