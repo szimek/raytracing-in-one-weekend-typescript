@@ -1,0 +1,7 @@
+# Third party
+node_modules/
+.eslintcache
+*.log
+
+# Build products
+image-*.ppm
