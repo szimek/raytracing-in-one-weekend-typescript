@@ -2,15 +2,20 @@ import { Point3 } from './Point3';
 import { Ray } from './Ray';
 import { Vec3 } from './Vec3';
 
+function degreesToRadians(degrees) {
+  return degrees * 0.0174533;
+}
+
 export class Camera {
   private origin: Point3;
   private lowerLeftCorner: Point3;
   private horizontal: Vec3;
   private vertical: Vec3;
 
-  constructor() {
-    const aspectRatio = 16.0 / 9.0;
-    const viewportHeight = 2.0;
+  constructor(fov: number, aspectRatio: number) {
+    const theta = degreesToRadians(fov);
+    const h = Math.tan(theta / 2);
+    const viewportHeight = 2.0 * h;
     const viewportWidth = aspectRatio * viewportHeight;
     const focalLength = 1.0;
 

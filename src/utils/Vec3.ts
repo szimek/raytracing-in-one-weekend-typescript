@@ -30,6 +30,16 @@ export class Vec3 {
     return Vec3.randomInUnitSphere().unit();
   }
 
+  static randomInUnitDisk(): Vec3 {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const p = new Vec3(random(-1, 1), random(-1, 1), 0);
+      if (p.lengthSquared() < 1) {
+        return p;
+      }
+    }
+  }
+
   negate(): Vec3 {
     return new Vec3(-this.x, -this.y, -this.z);
   }
@@ -60,9 +70,9 @@ export class Vec3 {
 
   cross(other: Vec3): Vec3 {
     return new Vec3(
-      this.x * other.y - this.y * other.x,
       this.y * other.z - this.z * other.y,
       this.z * other.x - this.x * other.z,
+      this.x * other.y - this.y * other.x,
     );
   }
 
