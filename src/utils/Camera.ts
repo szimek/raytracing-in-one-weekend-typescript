@@ -3,7 +3,7 @@ import { Ray } from './Ray';
 import { Vec3 } from './Vec3';
 
 function degreesToRadians(degrees) {
-  return degrees * 0.0174533;
+  return degrees * (Math.PI / 180);
 }
 
 export class Camera {
@@ -11,36 +11,52 @@ export class Camera {
   private lowerLeftCorner: Point3;
   private horizontal: Vec3;
   private vertical: Vec3;
+  private v: Vec3;
+  private u: Vec3;
+  private w: Vec3;
+  private lensRadius: number;
 
-  constructor(fov: number, aspectRatio: number) {
+  constructor(
+    lookFrom: Point3,
+    lookAt: Point3,
+    viewUp: Vec3,
+    fov: number,
+    aspectRatio: number,
+    aperture: number,
+    focusDist: number,
+  ) {
     const theta = degreesToRadians(fov);
     const h = Math.tan(theta / 2);
     const viewportHeight = 2.0 * h;
     const viewportWidth = aspectRatio * viewportHeight;
-    const focalLength = 1.0;
 
-    this.origin = new Point3(0, 0, 0);
-    this.horizontal = new Vec3(viewportWidth, 0.0, 0.0);
-    this.vertical = new Vec3(0.0, viewportHeight, 0.0);
+    this.w = lookFrom.subtract(lookAt).unit();
+    this.u = viewUp.cross(this.w).unit();
+    this.v = this.w.cross(this.u);
 
-    // To get the lower left corner of the screen,
-    // we subtract from the origin (which is behind the screen, at its center)
-    // the focal length (thus we move forward from the camera and end up in the center of the screen)
-    // half of the screen width (we end up in the middle of the left edge of the screen)
-    // half of the screen height (we end up in the lower left corner of the screen).
+    this.origin = lookFrom;
+    this.horizontal = this.u.scale(focusDist * viewportWidth);
+    this.vertical = this.v.scale(focusDist * viewportHeight);
+    this.horizontal = this.u.scale(viewportWidth);
+    this.vertical = this.v.scale(viewportHeight);
     this.lowerLeftCorner = this.origin
-      .subtract(new Vec3(0, 0, focalLength))
       .subtract(this.horizontal.scale(0.5))
-      .subtract(this.vertical.scale(0.5));
+      .subtract(this.vertical.scale(0.5))
+      .subtract(this.w.scale(focusDist));
+    this.lensRadius = aperture / 2;
   }
 
-  rayTo(u: number, v: number): Ray {
+  rayTo(s: number, t: number): Ray {
+    const rd = Vec3.randomInUnitDisk().scale(this.lensRadius);
+    const offset = this.u.scale(rd.x).add(this.v.scale(rd.y));
+
     return new Ray(
-      this.origin,
+      this.origin.add(offset),
       this.lowerLeftCorner
-        .add(this.horizontal.scale(u))
-        .add(this.vertical.scale(v))
-        .subtract(this.origin),
+        .add(this.horizontal.scale(s))
+        .add(this.vertical.scale(t))
+        .subtract(this.origin)
+        .subtract(offset),
     );
   }
 }
