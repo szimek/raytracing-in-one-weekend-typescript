@@ -10,11 +10,18 @@ export class Ray {
     return this.origin.add(this.direction.scale(t));
   }
 
-  color(scene: HittableList): Color {
+  color(scene: HittableList, remainingBounces = 1): Color {
+    if (remainingBounces <= 0) {
+      return new Color(0, 0, 0);
+    }
+
     const hit = scene.hit(this, 0, Infinity);
 
     if (hit) {
-      return hit.normal.add(new Color(1, 1, 1)).scale(0.5);
+      const target = hit.point.add(hit.normal).add(Vec3.randomInUnitSphere());
+      const childRay = new Ray(hit.point, target.subtract(hit.point));
+
+      return childRay.color(scene, remainingBounces - 1).scale(0.5);
     }
 
     // Scale Y to -1.0 ... 1.0

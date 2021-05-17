@@ -1,3 +1,5 @@
+import { random } from './random';
+
 export class Vec3 {
   x: number;
   y: number;
@@ -7,6 +9,21 @@ export class Vec3 {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+
+  static random(min?: number, max?: number): Vec3 {
+    return new Vec3(random(min, max), random(min, max), random(min, max));
+  }
+
+  static randomInUnitSphere(): Vec3 {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const v = Vec3.random(-1, 1);
+
+      if (v.lengthSquared() < 1) {
+        return v;
+      }
+    }
   }
 
   negate(): Vec3 {
