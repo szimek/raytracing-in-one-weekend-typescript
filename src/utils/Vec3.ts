@@ -26,6 +26,10 @@ export class Vec3 {
     }
   }
 
+  static randomUnitVector(): Vec3 {
+    return Vec3.randomInUnitSphere().unit();
+  }
+
   negate(): Vec3 {
     return new Vec3(-this.x, -this.y, -this.z);
   }

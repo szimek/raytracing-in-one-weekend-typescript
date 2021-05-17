@@ -18,7 +18,7 @@ export class Ray {
     const hit = scene.hit(this, 0.001, Infinity);
 
     if (hit) {
-      const target = hit.point.add(hit.normal).add(Vec3.randomInUnitSphere());
+      const target = hit.point.add(hit.normal).add(Vec3.randomUnitVector());
       const childRay = new Ray(hit.point, target.subtract(hit.point));
 
       return childRay.color(scene, remainingBounces - 1).scale(0.5);
