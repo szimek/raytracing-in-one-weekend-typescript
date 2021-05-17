@@ -14,8 +14,15 @@ function normalize(value: number): number {
 export class Color extends Vec3 {}
 
 export function write(color: Color, samplesPerPixelCount = 1): string {
-  const { x, y, z } = color.scale(1 / samplesPerPixelCount);
+  const factor = 1 / samplesPerPixelCount;
+  const { x, y, z } = color.scale(factor);
+
+  // Gamma correction
+  const gamma = 2.0;
+  const r = x ** (1 / gamma);
+  const g = y ** (1 / gamma);
+  const b = z ** (1 / gamma);
 
   // Output translated [0,255] value of each color component.
-  return `${normalize(x)} ${normalize(y)} ${normalize(z)}\n`;
+  return `${normalize(r)} ${normalize(g)} ${normalize(b)}\n`;
 }
