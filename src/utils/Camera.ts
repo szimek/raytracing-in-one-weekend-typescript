@@ -23,26 +23,25 @@ export class Camera {
     fov: number,
     aspectRatio: number,
     aperture: number,
-    focusDist: number,
+    focusDistance: number,
   ) {
     const theta = degreesToRadians(fov);
-    const h = Math.tan(theta / 2);
+    const h = Math.tan(theta / 2.0);
+
     const viewportHeight = 2.0 * h;
     const viewportWidth = aspectRatio * viewportHeight;
 
-    this.w = lookFrom.subtract(lookAt).unit();
+    this.w = lookFrom.subtract(lookAt).unit(); // look direction
     this.u = viewUp.cross(this.w).unit();
     this.v = this.w.cross(this.u);
 
     this.origin = lookFrom;
-    this.horizontal = this.u.scale(focusDist * viewportWidth);
-    this.vertical = this.v.scale(focusDist * viewportHeight);
-    this.horizontal = this.u.scale(viewportWidth);
-    this.vertical = this.v.scale(viewportHeight);
+    this.horizontal = this.u.scale(focusDistance * viewportWidth);
+    this.vertical = this.v.scale(focusDistance * viewportHeight);
     this.lowerLeftCorner = this.origin
-      .subtract(this.horizontal.scale(0.5))
-      .subtract(this.vertical.scale(0.5))
-      .subtract(this.w.scale(focusDist));
+      .subtract(this.horizontal.scale(1 / 2))
+      .subtract(this.vertical.scale(1 / 2))
+      .subtract(this.w.scale(focusDistance));
     this.lensRadius = aperture / 2;
   }
 
